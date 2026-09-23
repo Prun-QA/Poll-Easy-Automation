@@ -1,0 +1,25 @@
+{
+  "name": "poll-easy-v2-automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --project=chrome --headed --workers=1",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:chromium": "playwright test --project=chromium",
+    "test:chrome": "playwright test --project=chrome",
+    "codegen": "playwright codegen",
+    "report": "playwright show-report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "1.58.0",
+    "@types/node": "^26.6.2",
+    "dotenv": "^18.0.3"
+  }
+}
