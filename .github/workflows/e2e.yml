@@ -28,8 +28,8 @@ jobs:
           POLLEASY_PASSWORD: ${{ secrets.POLLEASY_PASSWORD }}
         run: |
           missing=""
-          [ -z "$POLLEASY_USERNAME" ] && missing="$missing POLLEASY_USERNAME"
-          [ -z "$POLLEASY_PASSWORD" ] && missing="$missing POLLEASY_PASSWORD"
+          if [ -z "$POLLEASY_USERNAME" ]; then missing="$missing POLLEASY_USERNAME"; fi
+          if [ -z "$POLLEASY_PASSWORD" ]; then missing="$missing POLLEASY_PASSWORD"; fi
           if [ -n "$missing" ]; then
             echo "::error::Missing repository secret(s):$missing"
             echo "Add them under Settings > Secrets and variables > Actions."
