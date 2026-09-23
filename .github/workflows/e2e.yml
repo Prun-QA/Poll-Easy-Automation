@@ -1,0 +1,64 @@
+name: E2E
+
+# Runs the whole suite on chromium. Note that the creation specs write real
+# records to the shared PollEasy workspace and nothing is cleaned up, so each
+# run leaves roughly eight rows behind, including a workspace membership.
+# Cross-browser runs stay manual, in full-suite.yml.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: All specs
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Without these the login step fails deep inside Playwright with an
+      # unhelpful error, so say plainly what is missing.
+      - name: Check required secrets
+        env:
+          POLLEASY_USERNAME: ${{ secrets.POLLEASY_USERNAME }}
+          POLLEASY_PASSWORD: ${{ secrets.POLLEASY_PASSWORD }}
+        run: |
+          missing=""
+          [ -z "$POLLEASY_USERNAME" ] && missing="$missing POLLEASY_USERNAME"
+          [ -z "$POLLEASY_PASSWORD" ] && missing="$missing POLLEASY_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing"
+            echo "Add them under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          echo "Required secrets are present."
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run tests
+        run: npx playwright test --project=chromium
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          POLLEASY_USERNAME: ${{ secrets.POLLEASY_USERNAME }}
+          POLLEASY_PASSWORD: ${{ secrets.POLLEASY_PASSWORD }}
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
