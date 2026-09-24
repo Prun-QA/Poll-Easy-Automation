@@ -24,10 +24,12 @@ jobs:
       # unhelpful error, so say plainly what is missing.
       - name: Check required secrets
         env:
+          BASE_URL: ${{ secrets.BASE_URL }}
           POLLEASY_USERNAME: ${{ secrets.POLLEASY_USERNAME }}
           POLLEASY_PASSWORD: ${{ secrets.POLLEASY_PASSWORD }}
         run: |
           missing=""
+          if [ -z "$BASE_URL" ]; then missing="$missing BASE_URL"; fi
           if [ -z "$POLLEASY_USERNAME" ]; then missing="$missing POLLEASY_USERNAME"; fi
           if [ -z "$POLLEASY_PASSWORD" ]; then missing="$missing POLLEASY_PASSWORD"; fi
           if [ -n "$missing" ]; then

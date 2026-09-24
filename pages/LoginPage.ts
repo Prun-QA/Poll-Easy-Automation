@@ -30,8 +30,9 @@ export class LoginPage {
   }
 
   async expectLoggedIn() {
-    // Sign-in latency varies widely by browser and run, well past the 5s default.
-    await expect(this.page).toHaveURL(/polleasy-web\.vercel\.app\/?$/, { timeout: 30_000 });
+    // Matches the site root on any host, so the suite follows BASE_URL between
+    // environments. Sign-in latency varies widely by browser, well past the 5s default.
+    await expect(this.page).toHaveURL(/^https?:\/\/[^/]+\/?$/, { timeout: 30_000 });
     await expect(this.heading).toBeHidden();
   }
 }
